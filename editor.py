@@ -52,7 +52,7 @@ class Editor:
             self.tilemap.render(self.display, offset=render_scroll)
             
             current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
-            current_tile_img.set_alpha(100)
+            current_tile_img.set_alpha(150)
             
             mpos = pygame.mouse.get_pos()
             mpos = (mpos[0] / RENDER_SCALE, mpos[1] / RENDER_SCALE)
