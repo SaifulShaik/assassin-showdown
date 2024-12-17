@@ -11,6 +11,7 @@ from scripts.clouds import Clouds
 from scripts.particle import Particle
 
 class Game:
+    # Main Page
     def __init__(self):
         pygame.init()
 
