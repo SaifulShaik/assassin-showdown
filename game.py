@@ -52,7 +52,7 @@ class Game:
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0,0))
-            lerp_factor = 0.1
+            lerp_factor = 0.08
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) * lerp_factor
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) * lerp_factor
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
@@ -82,7 +82,7 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement[1] = True
                     if event.key == pygame.K_SPACE:
-                        self.player.velocity[1] = -2
+                        self.player.jump()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.movement[0] = False
