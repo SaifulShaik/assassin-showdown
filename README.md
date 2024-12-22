@@ -1,66 +1,120 @@
-# Assassin Showdown
+# Assassin Showdown  
 
-Assassin Showdown is a side-scrolling platformer game built using Python and Pygame. Players control an assassin as they navigate a tile-based environment, avoiding obstacles and interacting with the environment. The game features smooth movement, gravity-based physics, and a scrolling camera for an immersive experience.
-
----
-
-## How to Play
-
-1. **Movement**:
-   - Use **A** to move left.
-   - Use **D** to move right.
-   - Use **SPACE** to jump.
-
-2. **Goal**:
-   - Navigate through the tile-based world.
-   - Avoid falling off the map and interact with tiles like `stone` and `grass` to explore the game.
-
-3. **Camera**:
-   - The camera smoothly follows the player's movement.
-
-4. **Collision**:
-   - The player interacts with tiles such as `grass` and `stone`, ensuring realistic physics and obstacle collision.
+**Assassin Showdown** is a thrilling side-scrolling platformer game built using Python and Pygame. Players control an assassin navigating a tile-based world filled with obstacles, enemies, and challenges. The game features smooth movement, gravity-based physics, a scrolling camera, and a built-in map editor for creating custom levels.  
 
 ---
 
-## Libraries Used
+## Features  
 
-This project uses the following libraries:
+1. **Smooth Player Controls**  
+   - Precise and responsive controls for an engaging gameplay experience.  
 
-1. **[Pygame-ce]**:
-   - For rendering the game graphics and handling input.
-   - Provides tools for physics, image loading, and rendering.
+2. **Gravity-Based Physics**  
+   - Realistic physics ensure smooth jumping, falling, and collision detection.  
 
-2. **OS**:
-   - To navigate file paths and load assets.
+3. **Dynamic Camera System**  
+   - The camera follows the player seamlessly, providing a fluid visual experience.  
+
+4. **Interactive Environment**  
+   - Interact with tiles like grass and stone, as well as enemies and objects.  
+
+5. **Custom Map Editor**  
+   - Create and design your own levels using the in-game map editor.  
+   - Save and load maps to expand the game's replayability.  
+
+6. **Enemy Combat** *(Future Improvement)*  
+   - Players can battle enemies using weapons and power-ups.  
+
+7. **Audio Effects** *(Future Improvement)*  
+   - Sound effects and background music to enhance the atmosphere.  
 
 ---
 
-## How to Run the Project
+## How to Play  
 
-1. **Install Python**:
-   - Ensure Python 3.8 or later is installed on your system.
+### **Controls**  
+- **A**: Move left  
+- **D**: Move right  
+- **SPACE**: Jump  
+- **Q**: Dash  
 
-2. **Install Pygame**:
-   - Run the following command to install Pygame:
+### **Map Editor Controls**  
+- **Scroll**: Navigate through items  
+- **Left Click**: Place selected tile/object  
+- **T**: Auto smooth the island  
+- **WASD**: Move around the editor  
+- **G**: Free move the object  
+
+### **Goals**  
+- Navigate the tile-based world without falling or losing lives.  
+- Avoid or defeat enemies across multiple levels.  
+- Reach the end of each level to advance.  
+
+### **Camera**  
+- The camera smoothly tracks the player's movement, keeping the action centered.  
+
+### **Collision**  
+- Interact with environment tiles and obstacles for realistic gameplay.  
+
+---
+
+## Libraries Used  
+
+### 1. **Pygame-ce**  
+- Provides tools for game development, including rendering, input handling, and physics.  
+
+### 2. **OS**  
+- Used for navigating directories and loading assets like images and sounds.  
+
+---
+
+## How to Run the Project  
+
+1. **Install Python**  
+   - Ensure Python 3.8 or later is installed on your computer.  
+
+2. **Install Pygame**  
+   - Use pip to install the Pygame library:  
      ```bash
      pip install pygame-ce
-     ```
+     ```  
 
-3. **Run the Game**:
-   - Run the `game.py` file in the terminal:
+3. **Run the Game**  
+   - Run the main game file:  
      ```bash
      python game.py
-     ```
+     ```  
+
+4. **Use the Map Editor**  
+   - Launch the map editor to create custom levels:  
+     ```bash
+     python editor.py
+     ```  
 
 ---
 
-## Future Improvements
+## Assets  
 
-- Add enemies and combat mechanics.
-- Introduce new tiles and interactive objects.
-- Add Levels
+### **Sprites and Graphics**  
+- Tile-based environment sprites (grass, stone, etc.).  
+- Character and enemy animations for fluid movement and interaction.  
+
+### **Audio** *(Future Improvement)*  
+- Background music and sound effects to complement the gameplay.  
 
 ---
 
-Enjoy the game!
+## Future Improvements  
+
+- Add more enemy types with unique AI behaviors.  
+- Introduce combat mechanics with weapons and power-ups.  
+- Expand levels with varying difficulties and unique challenges.  
+- Implement audio effects for actions and ambient sounds.  
+- Add transitions between levels for a polished experience.  
+- Enhance the map editor with more tools and object options.  
+
+---
+
+**Enjoy Assassin Showdown!**  
+
+Feel free to ask questions or share feedback to make this game even better! 😊  
