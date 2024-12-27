@@ -24,6 +24,7 @@ class Editor:
             'grass': load_images(join('tiles', 'grass')),
             'large_decor': load_images(join('tiles', 'large_decor')),
             'stone': load_images(join('tiles', 'stone')),
+            'spawners': load_images(join('tiles', 'spawners')),
         }
 
         self.movement = [False, False, False, False]
