@@ -21,7 +21,8 @@ class Game:
         self.frame_update = 60
         pygame.display.set_caption('Assassin Showdown')
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.display = pygame.Surface((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        self.display = pygame.Surface((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), pygame.SRCALPHA)
+        self.display_2 = pygame.Surface((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         self.clock = pygame.time.Clock()
 
         self.movement = [False, False]
@@ -83,12 +84,13 @@ class Game:
         
     def run(self):
         while True:
-            self.display.blit(self.assets['background'], (0, 0))
+            self.display.fill((0, 0, 0, 0))
+            self.display_2.blit(self.assets['background'], (0, 0))
             self.screenshake = max(0, self.screenshake - 1)
             if not len(self.enemies):
                 self.transition += 1
                 if self.transition > 30:
-                    self.level += min(self.level + 1, len(os.listdir('data/assets/entities/maps'))-1)
+                    self.level += min(self.level + 1, len(os.listdir('data/assets/entities/maps'))-2)
                     self.load_level(self.level)
             if self.transition < 0:
                 self.transition += 1
@@ -154,6 +156,11 @@ class Game:
                 if kill:
                     self.sparks.remove(spark)
             
+            display_mask = pygame.mask.from_surface(self.display)
+            display_silhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+            for offset in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                self.display_2.blit(display_silhouette, offset)
+
             for particle in self.particles.copy():
                 kill = particle.update()
                 particle.render(self.display, offset=render_scroll)
@@ -185,8 +192,10 @@ class Game:
                 pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
                 transition_surf.set_colorkey((255, 255, 255))
                 self.display.blit(transition_surf, (0, 0))
+
+            self.display_2.blit(self.display, (0, 0))
             screenshake_offset = (random.random()* self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
-            scaled_surface = pygame.transform.scale(self.display, self.screen.get_size())
+            scaled_surface = pygame.transform.scale(self.display_2, self.screen.get_size())
             self.screen.blit(scaled_surface, screenshake_offset)
             pygame.display.update()
             self.clock.tick(self.frame_update)
