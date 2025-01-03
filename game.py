@@ -69,7 +69,7 @@ class Game:
         
         self.tilemap = Tilemap(self, tile_size=16)
 
-        self.level = 2
+        self.level = 0
         
         self.load_level(self.level)
 
@@ -201,7 +201,7 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         if self.player.jump():
                             self.sfx['jump'].play()
-                    if event.key == pygame.K_w:
+                    if event.key == pygame.K_q:
                         self.player.dash()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
