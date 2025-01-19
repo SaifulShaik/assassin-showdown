@@ -35,8 +35,6 @@ class Game:
             'player': load_image(join('player.png')),
             'background/game': load_image(join('background_game.png')),
             'background/menu': load_image(join('UI/front/background/background_menu.png')),
-            #'background/settings': load_image(join('background_settings.png')),
-            #'background/help': load_image(join('background_help.png')),
             'clouds': load_images(join('clouds')),
             'enemy/idle': Animation(load_images(join('enemy', 'idle')), img_dur=6),
             'enemy/run': Animation(load_images(join('enemy', 'run')), img_dur=4),
@@ -153,7 +151,7 @@ class Game:
                     self.assets['back/default'],
                     self.assets['back/hover'],
                 ],
-                change = self.main_menu,
+                change = None,
             )
             #"pause": Button()
         }
@@ -170,8 +168,8 @@ class Game:
             title = pygame.transform.scale(self.assets['title'], (int(title_width), int(title_height)))
 
             # Calculate position for top-center alignment
-            title_x = (self.SCREEN_WIDTH / 2 - title_width / 2) / 2.5  # Horizontal center (adjust for scaling)
-            title_y = 0  # Fixed position near the top
+            title_x = (self.SCREEN_WIDTH / 2 - title_width / 2) / 2.5
+            title_y = 0
             self.display.blit(title, (title_x, title_y))
 
             mouse_pos = pygame.mouse.get_pos()
@@ -187,7 +185,7 @@ class Game:
 
             # Render and check button interactions
             for button_name, button in self.buttons.items():
-                if button_name != "back":  # Skip the Back button on the main menu
+                if button_name != "back":
                     button.render(scaled_mouse_pos, click, self.display)
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
@@ -198,8 +196,27 @@ class Game:
         return button.x + button.size[0] >= mouse_pos[0] >= button.x and button.y + button.size[1] >= mouse_pos[1] >= button.y
          
     def options(self):
-        """Display the options menu."""
-        while True:
+        """Display the options menu with a blur transition."""
+        blur_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
+        blur_alpha = 0 
+        blur_increment = 10
+
+        # Transition in
+        while blur_alpha < 255:
+            blur_alpha += blur_increment
+            blur_alpha = min(blur_alpha, 255)
+            blur_surface.fill((0, 0, 0, int(blur_alpha)))
+            self.display.fill((47, 44, 47))
+            self.display.blit(self.assets['background/menu'], (0, 0))
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.screen.blit(blur_surface, (0, 0))
+            pygame.display.update()
+            self.clock.tick(self.frame_update)
+
+        # Main options menu loop
+        back_button_clicked = False
+        while not back_button_clicked:
             self.display.fill((0, 0, 0))
             self.display.blit(self.assets['background/menu'], (0, 0))
 
@@ -214,14 +231,31 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     click = True
 
-            # Render and handle the Back button in the options menu
             self.buttons['back'].render(scaled_mouse_pos, click, self.display)
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
             pygame.display.update()
             self.clock.tick(self.frame_update)
 
+            if self.buttons['back'].clicked:
+                break
 
+        # Transition out
+        blur_alpha = 255
+        while blur_alpha > 0:
+            blur_alpha -= blur_increment
+            blur_alpha = max(blur_alpha, 0)
+            blur_surface.fill((0, 0, 0, int(blur_alpha)))
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background/menu'], (0, 0))
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.screen.blit(blur_surface, (0, 0))
+            pygame.display.update()
+            self.clock.tick(self.frame_update)
+
+        self.main_menu()
+        
     #def help(self):
 
     def quit(self):

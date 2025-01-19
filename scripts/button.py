@@ -4,14 +4,17 @@ class Button:
         self.y = y
         self.images = images
         self.change = change
-        # Assuming all images are the same size
-        self.size = self.images[0].get_size()  # Width and height of the button
+        self.size = self.images[0].get_size()
+        self.clicked = False
 
     def render(self, mouse_pos, click, surf):
-        # Check if mouse is over the button
         if self.x + self.size[0] >= mouse_pos[0] >= self.x and self.y + self.size[1] >= mouse_pos[1] >= self.y:
-            surf.blit(self.images[1], (self.x, self.y))  # Highlight image
-            if click:
-                return self.change()  # Call the change function
+            surf.blit(self.images[1], (self.x, self.y))
+            if click and not self.clicked:
+                self.clicked = True
+                if self.change:
+                    self.change()
         else:
-            surf.blit(self.images[0], (self.x, self.y))  # Default image
+            surf.blit(self.images[0], (self.x, self.y)) 
+        if not click:
+            self.clicked = False
