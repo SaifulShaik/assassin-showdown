@@ -6,23 +6,24 @@ import math
 import os
 from os.path import join
 from scripts.utils import load_image, load_images, Animation
-from scripts.entities import PhysicsEntity, Player, Enemy
+from scripts.entities import Player, Enemy
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.particle import Particle
 from scripts.spark import Spark
+from scripts.button import Button
 
 class Game:
     def __init__(self):
         pygame.init()
 
-        SCREEN_WIDTH = 640
-        SCREEN_HEIGHT = 480
+        self.SCREEN_WIDTH = 1280
+        self.SCREEN_HEIGHT = 720
         self.frame_update = 60
         pygame.display.set_caption('Assassin Showdown')
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.display = pygame.Surface((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), pygame.SRCALPHA)
-        self.display_2 = pygame.Surface((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.display = pygame.Surface((self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2), pygame.SRCALPHA)
+        self.display_2 = pygame.Surface((self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2))
         self.clock = pygame.time.Clock()
 
         self.movement = [False, False]
@@ -32,7 +33,10 @@ class Game:
             'large_decor': load_images(join('tiles', 'large_decor')),
             'stone': load_images(join('tiles', 'stone')),
             'player': load_image(join('player.png')),
-            'background': load_image(join('background.png')),
+            'background/game': load_image(join('background_game.png')),
+            'background/menu': load_image(join('UI/front/background/background_menu.png')),
+            #'background/settings': load_image(join('background_settings.png')),
+            #'background/help': load_image(join('background_help.png')),
             'clouds': load_images(join('clouds')),
             'enemy/idle': Animation(load_images(join('enemy', 'idle')), img_dur=6),
             'enemy/run': Animation(load_images(join('enemy', 'run')), img_dur=4),
@@ -41,10 +45,21 @@ class Game:
             'player/jump': Animation(load_images(join('player', 'jump'))),
             'player/slide': Animation(load_images(join('player', 'slide'))),
             'player/wall_slide': Animation(load_images(join('player', 'wall_slide'))),
-            'particle/leaf': Animation(load_images(join('particles', 'leaf')), img_dur=20, loop=False),
+            'particle/leaf': Animation(load_images(join('particles', 'leaf')), img_dur=10, loop=False),
             'particle/particle': Animation(load_images(join('particles', 'particle')), img_dur=6, loop=False),
             'gun': load_image('gun.png'),
             'projectile': load_image('projectile.png'),
+            "title": load_image("UI/front/title.png"),
+            "start/default": load_image("UI/front/buttons/Play/0.png"),
+            "start/hover": load_image("UI/front/buttons/Play/1.png"), 
+            "options/default": load_image("UI/front/buttons/Options/0.png"),
+            "options/hover": load_image("UI/front/buttons/Options/1.png"),
+            "quit/default": load_image("UI/front/buttons/Quit/0.png"),
+            "quit/hover": load_image("UI/front/buttons/Quit/1.png"),
+            #"level_button" : load_images("button/level"), 
+            #"help_button" : load_images("button/help"), 
+            "back/default" : load_image("UI/front/buttons/Back/0.png"),
+            "back/hover" : load_image("UI/front/buttons/Back/1.png"),
         }
 
         self.sfx = {
@@ -69,8 +84,10 @@ class Game:
         
         self.tilemap = Tilemap(self, tile_size=16)
 
+        self.setup_buttons()
+
         self.level = 0
-        
+
         self.load_level(self.level)
 
         self.screenshake = 0
@@ -97,16 +114,131 @@ class Game:
         self.scroll = [0, 0]
         self.dead = 0
         self.transition = -30
-        
+
+    def setup_buttons(self):
+        """Initialize buttons."""
+        button_width, button_height = 160 / 1.5, 83 / 1.5
+        self.buttons = {
+            "start": Button(
+                x=self.SCREEN_WIDTH / 4 - button_width / 2,
+                y=self.SCREEN_HEIGHT / 4 - button_height / 1.5,
+                images=[
+                    pygame.transform.scale(self.assets['start/default'], (button_width, button_height)),
+                    pygame.transform.scale(self.assets['start/hover'], (button_width, button_height)),
+                ],
+                change=self.run,
+            ),
+            "options": Button(
+                x=self.SCREEN_WIDTH / 4 - button_width / 2,
+                y=self.SCREEN_HEIGHT / 4 + button_height - button_height/3,
+                images=[
+                    pygame.transform.scale(self.assets['options/default'], (button_width, button_height)),
+                    pygame.transform.scale(self.assets['options/hover'], (button_width, button_height)),
+                ],
+                change=self.options,
+            ),
+            "quit": Button(
+                x=self.SCREEN_WIDTH / 4 - button_width / 2,
+                y=self.SCREEN_HEIGHT / 4 + button_height * 2,
+                images = [
+                    pygame.transform.scale(self.assets['quit/default'], (button_width, button_height)),
+                    pygame.transform.scale(self.assets['quit/hover'], (button_width, button_height)),
+                ],
+                change = self.quit,
+            ),
+            "back": Button(
+                x=20,
+                y=20,
+                images = [
+                    self.assets['back/default'],
+                    self.assets['back/hover'],
+                ],
+                change = self.main_menu,
+            )
+            #"pause": Button()
+        }
+
+    def main_menu(self):
+        """Display the main menu."""
+        while True:
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background/menu'], (0, 0))
+
+            # Scale the title image
+            title_width = self.SCREEN_WIDTH / 6
+            title_height = self.SCREEN_HEIGHT / 5
+            title = pygame.transform.scale(self.assets['title'], (int(title_width), int(title_height)))
+
+            # Calculate position for top-center alignment
+            title_x = (self.SCREEN_WIDTH / 2 - title_width / 2) / 2.5  # Horizontal center (adjust for scaling)
+            title_y = 0  # Fixed position near the top
+            self.display.blit(title, (title_x, title_y))
+
+            mouse_pos = pygame.mouse.get_pos()
+            scaled_mouse_pos = (mouse_pos[0] / 2, mouse_pos[1] / 2)
+            click = False
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    click = True
+
+            # Render and check button interactions
+            for button_name, button in self.buttons.items():
+                if button_name != "back":  # Skip the Back button on the main menu
+                    button.render(scaled_mouse_pos, click, self.display)
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(self.frame_update)
+
+    def is_mouse_over_button(self, button, mouse_pos):
+        return button.x + button.size[0] >= mouse_pos[0] >= button.x and button.y + button.size[1] >= mouse_pos[1] >= button.y
+         
+    def options(self):
+        """Display the options menu."""
+        while True:
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background/menu'], (0, 0))
+
+            mouse_pos = pygame.mouse.get_pos()
+            scaled_mouse_pos = (mouse_pos[0] / 2, mouse_pos[1] / 2)
+            click = False
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    click = True
+
+            # Render and handle the Back button in the options menu
+            self.buttons['back'].render(scaled_mouse_pos, click, self.display)
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(self.frame_update)
+
+
+    #def help(self):
+
+    def quit(self):
+        pygame.quit()
+        sys.exit()
+
     def run(self):
         pygame.mixer.music.load('data/assets/audio/music.wav')
-        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play(-1)
 
         self.sfx['ambience'].play(-1)
+
         while True:
             self.display.fill((0, 0, 0, 0))
-            self.display_2.blit(self.assets['background'], (0, 0))
+            self.display_2.fill((0, 0, 0, 0))
+            self.display_2.blit(self.assets['background/game'], (0, 0))
             self.screenshake = max(0, self.screenshake - 1)
             if not len(self.enemies):
                 self.transition += 1
@@ -194,9 +326,9 @@ class Game:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_a:
+                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         self.movement[0] = True
-                    if event.key == pygame.K_d:
+                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                         self.movement[1] = True
                     if event.key == pygame.K_SPACE:
                         if self.player.jump():
@@ -204,16 +336,19 @@ class Game:
                     if event.key == pygame.K_q:
                         self.player.dash()
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_a:
+                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         self.movement[0] = False
-                    if event.key == pygame.K_d:
+                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                         self.movement[1] = False
+
+            #  pause game UI
 
             if self.transition:
                 transition_surf = pygame.Surface(self.display.get_size())
                 pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
                 transition_surf.set_colorkey((255, 255, 255))
                 self.display.blit(transition_surf, (0, 0))
+
 
             self.display_2.blit(self.display, (0, 0))
             screenshake_offset = (random.random()* self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
@@ -222,4 +357,4 @@ class Game:
             pygame.display.update()
             self.clock.tick(self.frame_update)
 
-Game().run()
+Game().main_menu()

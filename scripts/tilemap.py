@@ -58,9 +58,11 @@ class Tilemap:
         f.close()
         
     def load(self, path):
-        f = open(path, 'r')
-        map_data = json.load(f)
-        f.close()
+        try:
+            with open(path, 'r') as f:
+                map_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            map_data = {'tilemap': {}, 'tile_size': self.tile_size, 'offgrid': []}
         
         self.tilemap = map_data['tilemap']
         self.tile_size = map_data['tile_size']

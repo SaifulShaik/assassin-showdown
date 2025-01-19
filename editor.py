@@ -11,8 +11,8 @@ class Editor:
     def __init__(self):
         pygame.init()
 
-        SCREEN_WIDTH = 640
-        SCREEN_HEIGHT = 480
+        SCREEN_WIDTH = 1280
+        SCREEN_HEIGHT = 720
         self.frame_update = 60
         pygame.display.set_caption('EDITOR ')
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -27,10 +27,12 @@ class Editor:
             'spawners': load_images(join('tiles', 'spawners')),
         }
 
+        self.map_num = '0.json'
+
         self.movement = [False, False, False, False]
         self.tilemap = Tilemap(self, tile_size=16)
         try:
-            self.tilemap.load(join('data', 'assets', 'entities', 'maps', '0.json'))
+            self.tilemap.load(join('data', 'assets', 'entities', 'maps', self.map_num))
         except FileNotFoundError:
             pass
         self.scroll = [0, 0]
@@ -122,7 +124,7 @@ class Editor:
                     if event.key == pygame.K_t:
                         self.tilemap.autotile()
                     if event.key == pygame.K_o:
-                        self.tilemap.save(join('data', 'assets', 'entities', 'maps', '0.json'))
+                        self.tilemap.save(join('data', 'assets', 'entities', 'maps', self.map_num))
                     if event.key == pygame.K_LSHIFT:
                         self.shift = True
                 if event.type == pygame.KEYUP:
