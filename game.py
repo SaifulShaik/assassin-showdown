@@ -15,8 +15,9 @@ from scripts.button import Button
 
 class Game:
     def __init__(self):
-        pygame.init()
 
+        # Initialize Pygame and window
+        pygame.init()
         self.SCREEN_WIDTH = 1280
         self.SCREEN_HEIGHT = 720
         self.frame_update = 60
@@ -27,6 +28,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.movement = [False, False]
+        # Assets to load
         self.assets = {
             'decor': load_images(join('tiles', 'decor')),
             'grass': load_images(join('tiles', 'grass')),
@@ -69,6 +71,7 @@ class Game:
             'ambience': pygame.mixer.Sound('data/assets/audio/ambience.wav'),
         }
 
+        # volume control
         self.sfx['ambience'].set_volume(0.2)
         self.sfx['shoot'].set_volume(0.4)
         self.sfx['hit'].set_volume(0.8)
@@ -76,6 +79,7 @@ class Game:
         self.sfx['dash'].set_volume(0.3)
         self.sfx['jump'].set_volume(0.7)
 
+        # Initialize game objects
         self.clouds = Clouds(self.assets['clouds'], count=16)
         
         self.player = Player(self, (50, 50), (8, 15))
@@ -90,6 +94,7 @@ class Game:
 
         self.screenshake = 0
         
+    # Load Level
     def load_level(self, map_id):
         self.tilemap.load('data/assets/entities/maps/' + str(map_id) + '.json')
         
@@ -113,6 +118,7 @@ class Game:
         self.dead = 0
         self.transition = -30
 
+    # Setup Buttons to display on the main menu and other UI pages
     def setup_buttons(self):
         """Initialize buttons."""
         button_width, button_height = 160 / 1.5, 83 / 1.5
@@ -156,6 +162,7 @@ class Game:
             #"pause": Button()
         }
 
+    # Start with main menu
     def main_menu(self):
         """Display the main menu."""
         while True:
@@ -192,9 +199,11 @@ class Game:
             pygame.display.update()
             self.clock.tick(self.frame_update)
 
+    # Check if mouse is over button
     def is_mouse_over_button(self, button, mouse_pos):
         return button.x + button.size[0] >= mouse_pos[0] >= button.x and button.y + button.size[1] >= mouse_pos[1] >= button.y
          
+    # Options/settings Window
     def options(self):
         """Display the options menu with a blur transition."""
         blur_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
@@ -257,11 +266,12 @@ class Game:
         self.main_menu()
         
     #def help(self):
-
+    # Quit game function
     def quit(self):
         pygame.quit()
         sys.exit()
 
+    # Run the main game
     def run(self):
         pygame.mixer.music.load('data/assets/audio/music.wav')
         pygame.mixer.music.set_volume(0.3)
@@ -357,8 +367,7 @@ class Game:
                     self.particles.remove(particle)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         self.movement[0] = True
@@ -375,7 +384,7 @@ class Game:
                     if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                         self.movement[1] = False
 
-            #  pause game UI
+            #  Pause UI page needs to be added here
 
             if self.transition:
                 transition_surf = pygame.Surface(self.display.get_size())
@@ -391,4 +400,5 @@ class Game:
             pygame.display.update()
             self.clock.tick(self.frame_update)
 
+# Run the main menu so user has options before playing the game
 Game().main_menu()
