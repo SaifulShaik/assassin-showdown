@@ -1,5 +1,8 @@
 # Assassin Showdown  
 
+Made by: Saiful Shaik.
+Date: December, 25, 2024.
+
 **Assassin Showdown** is a thrilling side-scrolling platformer game built using Python and Pygame. Players control an assassin navigating a tile-based world filled with obstacles, enemies, and challenges. The game features smooth movement, gravity-based physics, a scrolling camera, and a built-in map editor for creating custom levels.  
 
 ---
@@ -102,16 +105,7 @@
 ### **Audio** *(Future Improvement)*  
 - Background music and sound effects to complement the gameplay.  
 
----
-
-## Future Improvements  
-
-- Add more enemy types with unique AI behaviors.  
-- Introduce combat mechanics with weapons and power-ups.  
-- Expand levels with varying difficulties and unique challenges.  
-- Implement audio effects for actions and ambient sounds.  
-- Add transitions between levels for a polished experience.  
-- Enhance the map editor with more tools and object options.  
+--- 
 
 ---
 
