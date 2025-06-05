@@ -12,6 +12,7 @@ from scripts.clouds import Clouds
 from scripts.particle import Particle
 from scripts.spark import Spark
 from scripts.button import Button
+from scripts.levels import Levels
 
 class Game:
     def __init__(self):
@@ -36,7 +37,6 @@ class Game:
             'stone': load_images(join('tiles', 'stone')),
             'player': load_image(join('player.png')),
             'background/game': load_image(join('background_game.png')),
-            'background/menu': load_image(join('UI/front/background/background_menu.png')),
             'clouds': load_images(join('clouds')),
             'enemy/idle': Animation(load_images(join('enemy', 'idle')), img_dur=6),
             'enemy/run': Animation(load_images(join('enemy', 'run')), img_dur=4),
@@ -49,6 +49,9 @@ class Game:
             'particle/particle': Animation(load_images(join('particles', 'particle')), img_dur=6, loop=False),
             'gun': load_image('gun.png'),
             'projectile': load_image('projectile.png'),
+
+            # Main UI Assets
+            'background/menu': load_image(join('UI/front/background/background_menu.png')),
             "title": load_image("UI/front/title.png"),
             "start/default": load_image("UI/front/buttons/Play/0.png"),
             "start/hover": load_image("UI/front/buttons/Play/1.png"), 
@@ -58,9 +61,18 @@ class Game:
             "quit/hover": load_image("UI/front/buttons/Quit/1.png"),
             #"level_button" : load_images("button/level"), 
             #"help_button" : load_images("button/help"), 
-            "back/default" : load_image("UI/front/buttons/Back/0.png"),
-            "back/hover" : load_image("UI/front/buttons/Back/1.png"),
         }
+
+        self.level_assets = {
+            "layout" : load_image("UI/front/level/level_page.png"),
+        }
+        self.assets_options = {
+            #"layout" : load_image("UI/front/layout.png"),
+            "back/default" : load_image("UI/front/Options/Back/0.png"),
+            "back/hover" : load_image("UI/front/Options/Back/1.png"),
+
+        }
+
 
         self.sfx = {
             'jump': pygame.mixer.Sound('data/assets/audio/jump.wav'),
@@ -72,12 +84,12 @@ class Game:
         }
 
         # volume control
-        self.sfx['ambience'].set_volume(0.2)
-        self.sfx['shoot'].set_volume(0.4)
-        self.sfx['hit'].set_volume(0.8)
-        self.sfx['death'].set_volume(0.8)
-        self.sfx['dash'].set_volume(0.3)
-        self.sfx['jump'].set_volume(0.7)
+        self.sfx['ambience'].set_volume(0.1)
+        self.sfx['shoot'].set_volume(0.3)
+        self.sfx['hit'].set_volume(0.7)
+        self.sfx['death'].set_volume(0.7)
+        self.sfx['dash'].set_volume(0.2)
+        self.sfx['jump'].set_volume(0.6)
 
         # Initialize game objects
         self.clouds = Clouds(self.assets['clouds'], count=16)
@@ -154,13 +166,13 @@ class Game:
                 x=20,
                 y=20,
                 images = [
-                    self.assets['back/default'],
-                    self.assets['back/hover'],
+                    self.assets_options['back/default'],
+                    self.assets_options['back/hover'],
                 ],
                 change = None,
             )
-            #"pause": Button()
         }
+
 
     # Start with main menu
     def main_menu(self):
@@ -199,10 +211,12 @@ class Game:
             pygame.display.update()
             self.clock.tick(self.frame_update)
 
+
     # Check if mouse is over button
     def is_mouse_over_button(self, button, mouse_pos):
         return button.x + button.size[0] >= mouse_pos[0] >= button.x and button.y + button.size[1] >= mouse_pos[1] >= button.y
          
+
     # Options/settings Window
     def options(self):
         """Display the options menu with a blur transition."""
@@ -264,8 +278,43 @@ class Game:
             self.clock.tick(self.frame_update)
 
         self.main_menu()
-        
-    #def help(self):
+    
+
+    def help(self):
+        pass
+
+
+    def level_page(self):
+        back_button_clicked = False
+        while not back_button_clicked:
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background/menu'], (0, 0))
+            middle_x = self.SCREEN_WIDTH / 4
+            middle_y = self.SCREEN_HEIGHT / 4
+            self.display.blit(self.level_assets['layout'], (middle_x, middle_y))
+
+            mouse_pos = pygame.mouse.get_pos()
+            scaled_mouse_pos = (mouse_pos[0] / 2, mouse_pos[1] / 2)
+            click = False
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    click = True
+
+            self.buttons['back'].render(scaled_mouse_pos, click, self.display)
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(self.frame_update)
+
+            if self.buttons['back'].clicked:
+                break
+            
+
+
     # Quit game function
     def quit(self):
         pygame.quit()
@@ -331,7 +380,7 @@ class Game:
                 self.display.blit(img, (projectile[0][0] - img.get_width() / 2 - render_scroll[0], projectile[0][1] - img.get_height() / 2 - render_scroll[1]))
                 if self.tilemap.solid_check(projectile[0]):
                     self.projectiles.remove(projectile)
-                    for i in range(2):
+                    for _ in range(2):
                         self.sparks.append(Spark(projectile[0], random.random() - 0.5 + (math.pi if projectile[1] > 0 else 0), 2 + random.random()))
                 elif projectile[2] > 360:
                     self.projectiles.remove(projectile)
@@ -341,7 +390,7 @@ class Game:
                         self.dead += 1
                         self.sfx['death'].play()
                         self.screenshake = max(16, self.screenshake) 
-                        for i in range(30):
+                        for _ in range(30):
                             angle = random.random() * math.pi * 2
                             speed = random.random() * 5
                             self.sparks.append(Spark(self.player.rect().center, angle, 2 + random.random()))

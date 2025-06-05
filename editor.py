@@ -27,7 +27,7 @@ class Editor:
             'spawners': load_images(join('tiles', 'spawners')),
         }
 
-        self.map_num = '0.json'
+        self.map_num = '4.json'
 
         self.movement = [False, False, False, False]
         self.tilemap = Tilemap(self, tile_size=16)
